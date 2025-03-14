@@ -1,0 +1,116 @@
+<div class="admin-container">
+  <h1 class="admin-title">Admin Dashboard</h1>
+  
+  <div *ngIf="error" class="error-alert">
+    {{ error }}
+    <button (click)="error = ''" class="error-close">×</button>
+  </div>
+  
+  <div class="admin-grid">
+    <div class="quarters-section">
+      <div class="section-header">
+        <h2>Quarters</h2>
+        <button *ngIf="!selectedQuarter" (click)="selectedQuarter = {}" class="action-button create-button">
+          <i class="fa fa-plus"></i> New Quarter
+        </button>
+      </div>
+      
+      <div *ngIf="isLoading" class="loading-spinner">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+      
+      <div *ngIf="(quarters$ | async)?.length === 0 && !isLoading" class="empty-state">
+        <p>No quarters found. Create your first quarter to get started.</p>
+      </div>
+      
+      <div *ngIf="!(quarters$ | async)?.length === 0 && !isLoading" class="quarters-list">
+        <div *ngFor="let quarter of quarters$ | async" 
+             class="quarter-item" 
+             [class.active]="quarter.active"
+             [class.selected]="selectedQuarter?.id === quarter.id">
+          <div class="quarter-info" (click)="selectQuarter(quarter)">
+            <h3>{{ quarter.name }}</h3>
+            <p>Release Date: {{ quarter.releaseDate | date }}</p>
+          </div>
+          <div class="quarter-actions">
+            <button (click)="toggleActivation(quarter)" 
+                    [title]="quarter.active ? 'Deactivate' : 'Activate'"
+                    class="action-button toggle-button"
+                    [class.active]="quarter.active">
+              {{ quarter.active ? 'Active' : 'Inactive' }}
+            </button>
+            <button (click)="deleteQuarter(quarter.id!)" 
+                    title="Delete"
+                    class="action-button delete-button">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-section" *ngIf="selectedQuarter">
+      <div class="section-header">
+        <h2>{{ selectedQuarter.id ? 'Edit Quarter' : 'New Quarter' }}</h2>
+        <button (click)="selectedQuarter = null" class="action-button cancel-button">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+      </div>
+      
+      <form #quarterForm="ngForm" (ngSubmit)="selectedQuarter.id ? updateQuarter(selectedQuarter) : createQuarter(selectedQuarter)">
+        <div class="form-group">
+          <label for="quarterName">Quarter Name</label>
+          <input 
+            type="text" 
+            id="quarterName" 
+            name="quarterName"
+            [(ngModel)]="selectedQuarter.name"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="releaseDate">Release Date</label>
+          <input 
+            type="date" 
+            id="releaseDate" 
+            name="releaseDate"
+            [(ngModel)]="selectedQuarter.releaseDate"
+            required
+          >
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <label>
+            <input 
+              type="checkbox" 
+              name="active"
+              [(ngModel)]="selectedQuarter.active"
+            >
+            Active
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            name="description"
+            [(ngModel)]="selectedQuarter.description"
+            rows="4"
+          ></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            [disabled]="quarterForm.invalid"
+            class="action-button save-button"
+          >
+            <i class="fa fa-save"></i> {{ selectedQuarter.id ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
