@@ -1,0 +1,52 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2 class="login-title">Sign in to Whiskey Wiz</h2>
+    
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          [ngClass]="{'invalid': f['email'].touched && f['email'].errors}"
+        />
+        <div *ngIf="f['email'].touched && f['email'].errors" class="error-text">
+          <span *ngIf="f['email'].errors['required']">Email is required</span>
+          <span *ngIf="f['email'].errors['email']">Please enter a valid email</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          [ngClass]="{'invalid': f['password'].touched && f['password'].errors}"
+        />
+        <div *ngIf="f['password'].touched && f['password'].errors" class="error-text">
+          <span *ngIf="f['password'].errors['required']">Password is required</span>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          [disabled]="loginForm.invalid || loading"
+          class="login-button"
+        >
+          {{ loading ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </div>
+    </form>
+    
+    <div class="form-footer">
+      <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+    </div>
+  </div>
+</div>
